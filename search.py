@@ -172,6 +172,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
     from util import PriorityQueue
+    # from searchAgents import foodHeuristic
     fringe = PriorityQueue()  # Stack for fringe to manage states to be expanded
     fringe.push((problem.getStartState(), []), 0)  # Push the start state along with an empty path and the cost
     visited = set()  # Set to keep track of visited states
@@ -187,7 +188,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             for successor, action, stepCost in problem.getSuccessors(currentState):
                 if successor not in visited:
                     newPath = currentPath + [action]  # Update the path to include the new action
-                    fringe.push((successor, newPath), problem.getCostOfActions(newPath)+heuristic(successor,problem))# Push the successor state, the new path and the total cost of the path onto the fringe
+                    fringe.push((successor, newPath), problem.getCostOfActions(newPath)+heuristic(successor, problem))# Push the successor state, the new path and the total cost of the path onto the fringe
 
     return []  # Return an empty list if no solution is found
     # util.raiseNotDefined()

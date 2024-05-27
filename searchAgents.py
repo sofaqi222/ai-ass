@@ -265,6 +265,33 @@ def euclideanHeuristic(position, problem, info={}):
 #####################################################
 # This portion is incomplete.  Time to write code!  #
 #####################################################
+def foodHeuristic(state, problem):
+    """
+    Your heuristic for the FoodSearchProblem goes here.
+
+    This heuristic must be consistent to ensure correctness.
+    First, state is a tuple ( pacmanPosition, foodGrid ) where foodGrid is a Grid (see
+    game.py) of either True or False. You can call foodGrid.asList() to get a list
+    of food coordinates instead.
+    If you want access to info like walls, capsules, etc., you can query the problem.
+    For example, problem.walls gives you a Grid of where the walls are.
+
+    If you use A* everwhere instead of BFS or DFS, you shouldn't need to change
+    any of the code here, except for the heuristic function itself.
+    """
+    position, foodGrid = state
+    foodList = foodGrid.asList()
+
+    if not foodList:
+        return 0
+
+    maxDistance = 0
+    for food in foodList:
+        distance = util.manhattanDistance(position, food)
+        if distance > maxDistance:
+            maxDistance = distance
+
+    return maxDistance
 
 class CornersProblem(search.SearchProblem):
     """

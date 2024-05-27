@@ -276,10 +276,9 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     #     """
     #     "*** YOUR CODE HERE ***"
     #     util.raiseNotDefined()
-
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
-      Your expectimax agent (question 4)
+    Your expectimax agent (question 4)
     """
 
     def getAction(self, gameState):
@@ -289,18 +288,127 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         All ghosts should be modeled as choosing uniformly at random from their
         legal moves.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
 
-def betterEvaluationFunction(currentGameState):
+        def maxValue(state, depth):
+            newDepth = depth + 1
+            if state.isWin() or state.isLose() or newDepth == self.depth:
+                return self.evaluationFunction(state)
+            maxEval = float('-inf')
+            actions = state.getLegalActions(0)
+            for action in actions:
+                successor = state.generateSuccessor(0, action)
+                maxEval = max(maxEval, expectValue(successor, newDepth, 1))
+            return maxEval
+
+        def expectValue(state, depth, agentIndex):
+            if state.isWin() or state.isLose():
+                return self.evaluationFunction(state)
+            actions = state.getLegalActions(agentIndex)
+            expectedValue = 0
+            numActions = len(actions)
+            for action in actions:
+                successor = state.generateSuccessor(agentIndex, action)
+                if agentIndex == state.getNumAgents() - 1:
+                    expectedValue += maxValue(successor, depth)
+                else:
+                    expectedValue += expectValue(successor, depth, agentIndex + 1)
+            if numActions == 0:
+                return 0
+            return expectedValue / numActions
+
+        bestAction = None
+        bestScore = float('-inf')
+
+        for action in gameState.getLegalActions(0):
+            successor = gameState.generateSuccessor(0, action)
+            score = expectValue(successor, 0, 1)
+            if score > bestScore:
+                bestScore = score
+                bestAction = action
+
+        return bestAction
+
+# class ExpectimaxAgent(MultiAgentSearchAgent):
+#     """
+#       Your expectimax agent (question 4)
+#     """
+#
+#     def getAction(self, gameState):
+#         """
+#         Returns the expectimax action using self.depth and self.evaluationFunction
+#
+#         All ghosts should be modeled as choosing uniformly at random from their
+#         legal moves.
+#         """
+#         "*** YOUR CODE HERE ***"
+#         util.raiseNotDefined()
+def improvedEvaluationFunction(currentGameState):
     """
     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
     evaluation function (question 5).
 
-    DESCRIPTION: <write something here so we know what you did>
+    DESCRIPTION:
+        This evaluation function divides the final score of the state into two parts:
+        1. When the ghosts are scared (identified by scaredTimes > 0).
+        2. Normal ghosts.
+
+        Common evaluation score between both parts includes the current score, the reciprocal of the sum of food distances, and the number of remaining food pellets.
+
+        In the first case, from the total score we subtract the distance to the ghosts and the number of power pellets, as the ghosts are currently scared. So, the closer Pacman is to the ghosts, the better the score.
+
+        In the second case, since the ghosts are not scared, we add the distance to the ghosts and the number of power pellets to the total score.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    pacmanPos = currentGameState.getPacmanPosition()
+    foodGrid = currentGameState.getFood()
+    ghostStates = currentGameState.getGhostStates()
+    scaredTimers = [ghostState.scaredTimer for ghostState in ghostStates]
+
+    # Manhattan distance to all food pellets
+    foodPositions = foodGrid.asList()
+    from util import manhattanDistance
+    foodDistances = [manhattanDistance(pacmanPos, foodPos) for foodPos in foodPositions]
+
+    # Manhattan distance to each ghost
+    ghostPositions = [ghostState.getPosition() for ghostState in ghostStates]
+    ghostDistances = [manhattanDistance(pacmanPos, ghostPos) for ghostPos in ghostPositions]
+
+    # Number of power pellets
+    numPowerPellets = len(currentGameState.getCapsules())
+
+    score = currentGameState.getScore()
+    numRemainingFoods = len(foodPositions)
+    totalScaredTime = sum(scaredTimers)
+    totalGhostDistance = sum(ghostDistances)
+
+    reciprocalFoodDistance = 0
+    if sum(foodDistances) > 0:
+        reciprocalFoodDistance = 1.0 / sum(foodDistances)
+
+    # Common score calculations
+    score += reciprocalFoodDistance - numRemainingFoods
+
+    if totalScaredTime > 0:
+        # Case when ghosts are scared
+        score += totalScaredTime - numPowerPellets - totalGhostDistance
+    else:
+        # Case when ghosts are not scared
+        score += totalGhostDistance + numPowerPellets
+
+    return score
+
 
 # Abbreviation
-better = betterEvaluationFunction
+better = improvedEvaluationFunction
+
+# def betterEvaluationFunction(currentGameState):
+#     """
+#     Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
+#     evaluation function (question 5).
+#
+#     DESCRIPTION: <write something here so we know what you did>
+#     """
+#     "*** YOUR CODE HERE ***"
+#     util.raiseNotDefined()
+#
+# # Abbreviation
+# better = betterEvaluationFunction
