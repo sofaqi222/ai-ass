@@ -49,10 +49,6 @@ class MultiAgentSearchAgent(Agent):
         self.depth = int(depth)
 
 class MinimaxAgent(MultiAgentSearchAgent):
-    """
-    Your minimax agent (question 2)
-    """
-
     def getAction(self, gameState):
         """
         Returns the minimax action from the current gameState using self.depth
@@ -76,7 +72,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
         gameState.isLose():
         Returns whether or not the game state is a losing state
         """
-        "*** YOUR CODE HERE ***"
         def minimax(agentIndex, depth, gameState):
             # Terminal state or depth limit reached
             if gameState.isWin() or gameState.isLose() or depth == self.depth:
@@ -177,9 +172,6 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
 
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
-    """
-    Your expectimax agent (question 4)
-    """
 
     def getAction(self, gameState):
         """
@@ -230,9 +222,6 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
 
 def betterEvaluationFunction(currentGameState):
     """
-    Your extreme ghost-hunting, pellet-nabbing, food-gobbling, unstoppable
-    evaluation function (question 5).
-
     DESCRIPTION:
         This evaluation function divides the final score of the state into two parts:
         1. When the ghosts are scared (identified by scaredTimes > 0).
