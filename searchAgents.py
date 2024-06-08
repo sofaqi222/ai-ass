@@ -279,19 +279,21 @@ def foodHeuristic(state, problem):
     If you use A* everwhere instead of BFS or DFS, you shouldn't need to change
     any of the code here, except for the heuristic function itself.
     """
+    #unpack the state into the current position and the food grid
     position, foodGrid = state
+    #convert the food grid into a list of food positions
     foodList = foodGrid.asList()
 
-    if not foodList:
+    if not foodList: #if there is no food left in the grid, return a distance of 0
         return 0
 
-    maxDistance = 0
+    maxDistance = 0 #to keep track of the maximum distance to any food
     for food in foodList:
-        distance = util.manhattanDistance(position, food)
-        if distance > maxDistance:
+        distance = util.manhattanDistance(position, food) #calculate the Manhattan distance from the current position to this food position
+        if distance > maxDistance: #if this distance is greater than the current maximum distance, update maxDistance
             maxDistance = distance
 
-    return maxDistance
+    return maxDistance #return the maximum distance to any food
 
 class CornersProblem(search.SearchProblem):
     """

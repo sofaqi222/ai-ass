@@ -128,26 +128,28 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction.
         """
 
-        def maxValue(state, depth, alpha, beta):
+        def maxValue(state, depth, alpha, beta): #function to calculate the maximum value for the Pacman agent
+            #if the game is over or the maximum depth is reached, return the evaluation function value
             if state.isWin() or state.isLose() or depth == self.depth:
                 return self.evaluationFunction(state)
             maxEval = float('-inf')
-            for action in state.getLegalActions(0):
+            for action in state.getLegalActions(0): #get all legal actions for Pacman (agent index 0)
                 successor = state.generateSuccessor(0, action)
-                maxEval = max(maxEval, minValue(successor, depth, 1, alpha, beta))
+                maxEval = max(maxEval, minValue(successor, depth, 1, alpha, beta)) #recursively call minValue for the ghost
                 if maxEval > beta:
                     return maxEval
                 alpha = max(alpha, maxEval)
             return maxEval
 
-        def minValue(state, depth, agentIndex, alpha, beta):
+        def minValue(state, depth, agentIndex, alpha, beta): #function to calculate the minimum value for ghost agents
+            #if the game is over, return the evaluation function value
             if state.isWin() or state.isLose():
                 return self.evaluationFunction(state)
             minEval = float('inf')
-            numAgents = state.getNumAgents()
-            for action in state.getLegalActions(agentIndex):
+            numAgents = state.getNumAgents() #number of agents in the game
+            for action in state.getLegalActions(agentIndex): #get all legal actions for the ghost agent
                 successor = state.generateSuccessor(agentIndex, action)
-                if agentIndex == numAgents - 1:
+                if agentIndex == numAgents - 1: #last ghost, go to next depth and call maxValue
                     minEval = min(minEval, maxValue(successor, depth + 1, alpha, beta))
                 else:
                     minEval = min(minEval, minValue(successor, depth, agentIndex + 1, alpha, beta))
@@ -156,15 +158,15 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 beta = min(beta, minEval)
             return minEval
 
-        bestAction = None
+        bestAction = None #variable to store the best action
         alpha = float('-inf')
         beta = float('inf')
         bestScore = float('-inf')
 
-        for action in gameState.getLegalActions(0):
+        for action in gameState.getLegalActions(0): #evaluate each legal action for Pacman (agent index 0)
             successor = gameState.generateSuccessor(0, action)
             score = minValue(successor, 0, 1, alpha, beta)
-            if score > bestScore:
+            if score > bestScore: #update bestScore and bestAction if the current score is higher than the bestScore
                 bestScore = score
                 bestAction = action
             alpha = max(alpha, bestScore)
@@ -181,40 +183,42 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
 
-        def maxValue(state, depth):
-            newDepth = depth + 1
+        def maxValue(state, depth): #function to calculate the maximum value for the Pacman agent
+            newDepth = depth + 1 #increase the depth since Pacman has taken a turn
+            #if the game is over or the maximum depth is reached, return the evaluation function value
             if state.isWin() or state.isLose() or newDepth == self.depth:
                 return self.evaluationFunction(state)
             maxEval = float('-inf')
-            actions = state.getLegalActions(0)
-            for action in actions:
-                successor = state.generateSuccessor(0, action)
-                maxEval = max(maxEval, expectValue(successor, newDepth, 1))
+            actions = state.getLegalActions(0) #get all legal actions for Pacman (agent index 0)
+            for action in actions: #evaluate each action and choose the one with the highest value
+                successor = state.generateSuccessor(0, action)  #generate the successor state
+                maxEval = max(maxEval, expectValue(successor, newDepth, 1)) #gecursively call expectValue for the ghost
             return maxEval
 
-        def expectValue(state, depth, agentIndex):
-            if state.isWin() or state.isLose():
+        def expectValue(state, depth, agentIndex): #function to calculate the expected value for ghost agents
+            if state.isWin() or state.isLose():  #if the game is over, return the evaluation function value
                 return self.evaluationFunction(state)
-            actions = state.getLegalActions(agentIndex)
-            expectedValue = 0
-            numActions = len(actions)
-            for action in actions:
-                successor = state.generateSuccessor(agentIndex, action)
+            actions = state.getLegalActions(agentIndex) #get all legal actions for the ghost agent
+            expectedValue = 0 #initialize expectedValue to 0
+            numActions = len(actions) #number of legal actions
+            for action in actions: #evaluate each action and accumulate the expected value
+                successor = state.generateSuccessor(agentIndex, action) #generate the successor state
+                #if the agent is the last ghost, call maxValue for Pacman's turn
                 if agentIndex == state.getNumAgents() - 1:
                     expectedValue += maxValue(successor, depth)
                 else:
-                    expectedValue += expectValue(successor, depth, agentIndex + 1)
+                    expectedValue += expectValue(successor, depth, agentIndex + 1) #recursively call expectValue for the next ghost
             if numActions == 0:
                 return 0
             return expectedValue / numActions
 
-        bestAction = None
+        bestAction = None #to store the best action
         bestScore = float('-inf')
 
-        for action in gameState.getLegalActions(0):
-            successor = gameState.generateSuccessor(0, action)
-            score = expectValue(successor, 0, 1)
-            if score > bestScore:
+        for action in gameState.getLegalActions(0):  #evaluate each legal action for Pacman (agent index 0)
+            successor = gameState.generateSuccessor(0, action) #generate the successor state
+            score = expectValue(successor, 0, 1) #get the expected value for the successor state
+            if score > bestScore: #update bestScore and bestAction if the current score is higher than the bestScore
                 bestScore = score
                 bestAction = action
 
@@ -233,40 +237,41 @@ def betterEvaluationFunction(currentGameState):
 
         In the second case, since the ghosts are not scared, we add the distance to the ghosts and the number of power pellets to the total score.
     """
-    pacmanPos = currentGameState.getPacmanPosition()
-    foodGrid = currentGameState.getFood()
-    ghostStates = currentGameState.getGhostStates()
-    scaredTimers = [ghostState.scaredTimer for ghostState in ghostStates]
+    pacmanPos = currentGameState.getPacmanPosition() #get Pacman's position
+    foodGrid = currentGameState.getFood() #get the food grid
+    ghostStates = currentGameState.getGhostStates() #get the ghost states
+    scaredTimers = [ghostState.scaredTimer for ghostState in ghostStates] #get the scared timers for each ghost
 
-    # Manhattan distance to all food pellets
+    #Manhattan distance to all food pellets
     foodPositions = foodGrid.asList()
     from util import manhattanDistance
     foodDistances = [manhattanDistance(pacmanPos, foodPos) for foodPos in foodPositions]
 
-    # Manhattan distance to each ghost
+    #Manhattan distance to each ghost
     ghostPositions = [ghostState.getPosition() for ghostState in ghostStates]
     ghostDistances = [manhattanDistance(pacmanPos, ghostPos) for ghostPos in ghostPositions]
 
-    # Number of power pellets
+    #number of power pellets
     numPowerPellets = len(currentGameState.getCapsules())
 
-    score = currentGameState.getScore()
-    numRemainingFoods = len(foodPositions)
-    totalScaredTime = sum(scaredTimers)
-    totalGhostDistance = sum(ghostDistances)
+    score = currentGameState.getScore() #get the current game score
+    numRemainingFoods = len(foodPositions) #number of remaining food pellets
+    totalScaredTime = sum(scaredTimers) #total scared time of all ghosts
+    totalGhostDistance = sum(ghostDistances) #total Manhattan distance to all ghost
 
+    #reciprocal of the sum of food distances
     reciprocalFoodDistance = 0
     if sum(foodDistances) > 0:
         reciprocalFoodDistance = 1.0 / sum(foodDistances)
 
-    # Common score calculations
+    #common score calculations: add reciprocal of food distances and subtract number of remaining foods
     score += reciprocalFoodDistance - numRemainingFoods
 
     if totalScaredTime > 0:
-        # Case when ghosts are scared
+        #case when ghosts are scared
         score += totalScaredTime - numPowerPellets - totalGhostDistance
     else:
-        # Case when ghosts are not scared
+        #case when ghosts are not scared
         score += totalGhostDistance + numPowerPellets
 
     return score
