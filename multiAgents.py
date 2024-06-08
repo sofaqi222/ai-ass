@@ -72,46 +72,47 @@ class MinimaxAgent(MultiAgentSearchAgent):
         gameState.isLose():
         Returns whether or not the game state is a losing state
         """
-        def minimax(agentIndex, depth, gameState):
-            # Terminal state or depth limit reached
+        def minimax(agentIndex, depth, gameState): #function that returns the best value for a given agent
+            #terminal state or depth limit reached
             if gameState.isWin() or gameState.isLose() or depth == self.depth:
                 return self.evaluationFunction(gameState)
 
-            # Pacman (Maximizing agent)
+            #Pacman (Maximizing agent)
             if agentIndex == 0:
                 return maxValue(agentIndex, depth, gameState)
-            # Ghosts (Minimizing agents)
+            #Ghosts (Minimizing agents)
             else:
                 return minValue(agentIndex, depth, gameState)
 
-        def maxValue(agentIndex, depth, gameState):
+        def maxValue(agentIndex, depth, gameState): #function to get the maximum value for Pacman
             maxScore = float('-inf')
-            for action in gameState.getLegalActions(agentIndex):
-                successor = gameState.generateSuccessor(agentIndex, action)
-                score = minimax(1, depth, successor)
-                maxScore = max(maxScore, score)
+            for action in gameState.getLegalActions(agentIndex): #get all legal actions for Pacman
+                successor = gameState.generateSuccessor(agentIndex, action) #generate the successor state
+                score = minimax(1, depth, successor) #recursively call minimax for the first ghost
+                maxScore = max(maxScore, score) #update maxScore
             return maxScore
 
-        def minValue(agentIndex, depth, gameState):
+        def minValue(agentIndex, depth, gameState): #function to get the minimum value for ghosts
+
             minScore = float('inf')
-            nextAgent = agentIndex + 1
-            numAgents = gameState.getNumAgents()
-            # If this is the last ghost, the next agent will be Pacman and depth will increase
+            nextAgent = agentIndex + 1 #get the next agent index
+            numAgents = gameState.getNumAgents() #get the number of agents
+            #if this is the last ghost, the next agent will be Pacman and depth will increase
             if agentIndex == numAgents - 1:
                 nextAgent = 0
                 depth += 1
-            for action in gameState.getLegalActions(agentIndex):
-                successor = gameState.generateSuccessor(agentIndex, action)
-                score = minimax(nextAgent, depth, successor)
-                minScore = min(minScore, score)
+            for action in gameState.getLegalActions(agentIndex): #get all legal actions for the current ghost
+                successor = gameState.generateSuccessor(agentIndex, action) #generate the successor state
+                score = minimax(nextAgent, depth, successor) #recursively call minimax for the next agent
+                minScore = min(minScore, score) #update minScore
             return minScore
 
         bestAction = None
         bestScore = float('-inf')
-        for action in gameState.getLegalActions(0):
+        for action in gameState.getLegalActions(0): #evaluate each legal action for Pacman (agent index 0)
             successor = gameState.generateSuccessor(0, action)
-            score = minimax(1, 0, successor)
-            if score > bestScore:
+            score = minimax(1, 0, successor) #get the minimax value for the successor state
+            if score > bestScore: #update bestScore and bestAction if the current score is higher than the bestScore
                 bestScore = score
                 bestAction = action
 
@@ -218,8 +219,7 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         for action in gameState.getLegalActions(0):  #evaluate each legal action for Pacman (agent index 0)
             successor = gameState.generateSuccessor(0, action) #generate the successor state
             score = expectValue(successor, 0, 1) #get the expected value for the successor state
-            if score > bestScore: #update bestScore and bestAction if the current score is higher than the bestScore
-                bestScore = score
+            if score > bestScore: #update bestScore and bestAction if the current score is higher than the bestScore                bestScore = score
                 bestAction = action
 
         return bestAction

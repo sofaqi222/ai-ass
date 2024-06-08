@@ -88,75 +88,70 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     from util import Stack
-    fringe = Stack()  # Stack for fringe to manage states to be expanded
-    fringe.push((problem.getStartState(), []))  # Push the start state along with an empty path
-    visited = set()  # Set to keep track of visited states
+    fringe = Stack()  #stack for fringe to manage states to be expanded
+    fringe.push((problem.getStartState(), []))  #push the start state along with an empty path
+    visited = set()  #set to keep track of visited states
 
     while not fringe.isEmpty():
-        currentState, currentPath = fringe.pop()  # Pop the state and the path to that state from the fringe
+        currentState, currentPath = fringe.pop()  #pop the state and the path to that state from the fringe
 
         if problem.isGoalState(currentState):
-            return currentPath  # Return the path if the goal state is reached
+            return currentPath  #return the path if the goal state is reached
 
         if currentState not in visited:
-            visited.add(currentState)  # Mark the state as visited
+            visited.add(currentState)  #mark the state as visited
             for successor, action, stepCost in problem.getSuccessors(currentState):
                 if successor not in visited:
-                    newPath = currentPath + [action]  # Update the path to include the new action
-                    fringe.push((successor, newPath))  # Push the successor state and the new path onto the fringe
+                    newPath = currentPath + [action]  #update the path to include the new action
+                    fringe.push((successor, newPath))  #push the successor state and the new path onto the fringe
 
-    return []  # Return an empty list if no solution is found
-
-    # util.raiseNotDefined()
+    return []  #return an empty list if no solution is found
 
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     from util import Queue
-    fringe = Queue()  # Stack for fringe to manage states to be expanded
-    fringe.push((problem.getStartState(), []))  # Push the start state along with an empty path
-    visited = set()  # Set to keep track of visited states
+    fringe = Queue()  #stack for fringe to manage states to be expanded
+    fringe.push((problem.getStartState(), []))  #push the start state along with an empty path
+    visited = set()  # set to keep track of visited states
 
     while not fringe.isEmpty():
-        currentState, currentPath = fringe.pop()  # Pop the state and the path to that state from the fringe
+        currentState, currentPath = fringe.pop()  #pop the state and the path to that state from the fringe
 
         if problem.isGoalState(currentState):
-            return currentPath  # Return the path if the goal state is reached
+            return currentPath  #return the path if the goal state is reached
 
         if currentState not in visited:
-            visited.add(currentState)  # Mark the state as visited
+            visited.add(currentState)  #mark the state as visited
             for successor, action, stepCost in problem.getSuccessors(currentState):
                 if successor not in visited:
-                    newPath = currentPath + [action]  # Update the path to include the new action
-                    fringe.push((successor, newPath))  # Push the successor state and the new path onto the fringe
+                    newPath = currentPath + [action]  #update the path to include the new action
+                    fringe.push((successor, newPath))  #push the successor state and the new path onto the fringe
 
-    return []  # Return an empty list if no solution is found
-
-    # util.raiseNotDefined()
+    return []  #return an empty list if no solution is found
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     from util import PriorityQueue
-    fringe = PriorityQueue()  # Stack for fringe to manage states to be expanded
-    fringe.push((problem.getStartState(), []), 0)  # Push the start state along with an empty path and the cost
-    visited = set()  # Set to keep track of visited states
+    fringe = PriorityQueue()  #stack for fringe to manage states to be expanded
+    fringe.push((problem.getStartState(), []), 0)  #push the start state along with an empty path and the cost
+    visited = set()  #set to keep track of visited states
 
     while not fringe.isEmpty():
-        currentState, currentPath = fringe.pop()  # Pop the state and the path to that state from the fringe
+        currentState, currentPath = fringe.pop()  #pop the state and the path to that state from the fringe
 
         if problem.isGoalState(currentState):
-            return currentPath  # Return the path if the goal state is reached
+            return currentPath  #return the path if the goal state is reached
 
         if currentState not in visited:
-            visited.add(currentState)  # Mark the state as visited
+            visited.add(currentState)  #mark the state as visited
             for successor, action, stepCost in problem.getSuccessors(currentState):
                 if successor not in visited:
-                    newPath = currentPath + [action]   # Update the path to include the new action
-                    fringe.push((successor, newPath), problem.getCostOfActions(newPath))  # Push the successor state and the new path onto the fringe
+                    newPath = currentPath + [action]   #update the path to include the new action
+                    fringe.push((successor, newPath), problem.getCostOfActions(newPath))  #push the successor state and the new path onto the fringe
 
-    return []  # Return an empty list if no solution is found
+    return []  #return an empty list if no solution is found
 
-    # util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
     """
@@ -168,26 +163,24 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     from util import PriorityQueue
-    # from searchAgents import foodHeuristic
-    fringe = PriorityQueue()  # Stack for fringe to manage states to be expanded
-    fringe.push((problem.getStartState(), []), 0)  # Push the start state along with an empty path and the cost
-    visited = set()  # Set to keep track of visited states
+    fringe = PriorityQueue()  #stack for fringe to manage states to be expanded
+    fringe.push((problem.getStartState(), []), 0)  #push the start state along with an empty path and the cost
+    visited = set()  #set to keep track of visited states
 
     while not fringe.isEmpty():
-        currentState, currentPath = fringe.pop()  # Pop the state and the path to that state from the fringe
+        currentState, currentPath = fringe.pop()  #pop the state and the path to that state from the fringe
 
         if problem.isGoalState(currentState):
-            return currentPath  # Return the path if the goal state is reached
+            return currentPath  #return the path if the goal state is reached
 
         if currentState not in visited:
-            visited.add(currentState)  # Mark the state as visited
+            visited.add(currentState)  #mark the state as visited
             for successor, action, stepCost in problem.getSuccessors(currentState):
                 if successor not in visited:
-                    newPath = currentPath + [action]  # Update the path to include the new action
-                    fringe.push((successor, newPath), problem.getCostOfActions(newPath)+heuristic(successor, problem))# Push the successor state, the new path and the total cost of the path onto the fringe
+                    newPath = currentPath + [action]  #update the path to include the new action
+                    fringe.push((successor, newPath), problem.getCostOfActions(newPath)+heuristic(successor, problem)) #push the successor state, the new path and the total cost of the path onto the fringe
 
-    return []  # Return an empty list if no solution is found
-    # util.raiseNotDefined()
+    return []  #return an empty list if no solution is found
 
 
 # Abbreviations
