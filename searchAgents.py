@@ -280,6 +280,7 @@ def foodHeuristic(state, problem):
     any of the code here, except for the heuristic function itself.
     """
     #unpack the state into the current position and the food grid
+    # comment
     position, foodGrid = state
     #convert the food grid into a list of food positions
     foodList = foodGrid.asList()
