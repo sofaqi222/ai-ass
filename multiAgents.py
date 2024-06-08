@@ -219,7 +219,8 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         for action in gameState.getLegalActions(0):  #evaluate each legal action for Pacman (agent index 0)
             successor = gameState.generateSuccessor(0, action) #generate the successor state
             score = expectValue(successor, 0, 1) #get the expected value for the successor state
-            if score > bestScore: #update bestScore and bestAction if the current score is higher than the bestScore                bestScore = score
+            if score > bestScore: #update bestScore and bestAction if the current score is higher than the bestScore
+                bestScore = score
                 bestAction = action
 
         return bestAction
